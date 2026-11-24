@@ -1,0 +1,132 @@
+<main class="page">
+  <header class="head">
+    <div class="logo" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6"/><path d="M17 8h5m0 0-2-2m2 2-2 2"/></svg>
+    </div>
+    <div>
+      <h1>Employee Onboarding</h1>
+      <p>Complete your information to begin</p>
+    </div>
+  </header>
+
+  <nav class="steps" aria-label="Progress">
+    @for (s of steps(); track s.label; let last = $last) {
+      <span class="step" [class.done]="s.done" [class.active]="s.active">
+        <i class="dot">@if (s.done) {✓}</i>{{ s.label }}
+      </span>
+      @if (!last) { <span class="line" [class.done]="s.done"></span> }
+    }
+  </nav>
+
+  @if (successName()) {
+    <div class="success" role="status">✅ {{ successName() }} has been onboarded successfully.</div>
+  }
+
+  <form (submit)="onSubmit($event)" novalidate>
+    <!-- Personal -->
+    <section class="card">
+      <h2>Personal</h2>
+      <div class="grid">
+        <label>First name
+          <div class="field i-user"><input [formField]="f.firstName" /></div>
+          <app-field-error [state]="f.firstName()" /></label>
+        <label>Last name
+          <div class="field i-user"><input [formField]="f.lastName" /></div>
+          <app-field-error [state]="f.lastName()" /></label>
+        <label>Email
+          <div class="field i-mail"><input type="email" [formField]="f.email" /></div>
+          <app-field-error [state]="f.email()" /></label>
+        <label>Phone
+          <div class="field i-phone"><input type="tel" inputmode="numeric" [formField]="f.phone" /></div>
+          <app-field-error [state]="f.phone()" /></label>
+        <label>Date of birth
+          <div class="field i-cal"><input type="date" [formField]="f.dateOfBirth" /></div>
+          <app-field-error [state]="f.dateOfBirth()" /></label>
+      </div>
+    </section>
+
+    <!-- Employment -->
+    <section class="card">
+      <h2>Employment</h2>
+      <div class="grid">
+        <label>Employment type
+          <select [formField]="f.employmentType">
+            <option value="Full-time">Full-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Intern">Intern</option>
+          </select>
+        </label>
+        <label>Department
+          <select [formField]="f.department">
+            <option value="">Select department</option>
+            @for (d of departments; track d) { <option [value]="d">{{ d }}</option> }
+          </select>
+          <app-field-error [state]="f.department()" />
+        </label>
+        <label>Designation
+          <select [formField]="f.designation">
+            <option value="">Select designation</option>
+            @for (d of designations(); track d) { <option [value]="d">{{ d }}</option> }
+          </select>
+          <app-field-error [state]="f.designation()" />
+        </label>
+        <label>Joining date
+          <div class="field i-cal"><input type="date" [formField]="f.joiningDate" /></div>
+          <app-field-error [state]="f.joiningDate()" /></label>
+        @if (model().employmentType !== 'Full-time') {
+          <label>End date
+            <div class="field i-cal"><input type="date" [formField]="f.endDate" /></div>
+            <app-field-error [state]="f.endDate()" /></label>
+        }
+        <label>Manager email
+          <div class="field i-mail"><input type="email" [formField]="f.managerEmail" /></div>
+          <app-field-error [state]="f.managerEmail()" /></label>
+      </div>
+    </section>
+
+    <!-- Address -->
+    <section class="card">
+      <h2>Address</h2>
+      <div class="grid">
+        <label>Address line 1
+          <div class="field i-build"><input [formField]="f.address.line1" /></div>
+          <app-field-error [state]="f.address.line1()" /></label>
+        <label>City
+          <div class="field i-pin"><input [formField]="f.address.city" /></div>
+          <app-field-error [state]="f.address.city()" /></label>
+        <label>PIN
+          <div class="field i-hash"><input inputmode="numeric" [formField]="f.address.pin" /></div>
+          <app-field-error [state]="f.address.pin()" /></label>
+      </div>
+    </section>
+
+    <!-- Skills -->
+    <section class="card">
+      <h2>Skills</h2>
+      @for (skill of f.skills; track skill; let i = $index) {
+        <div class="skill">
+          <div>
+            <div class="field i-skill"><input placeholder="Skill name" aria-label="Skill name" [formField]="skill.name" /></div>
+            <app-field-error [state]="skill.name()" />
+          </div>
+          <div class="stars-col">
+            <app-star-rating [formField]="skill.rating" />
+            <app-field-error [state]="skill.rating()" />
+          </div>
+          <button type="button" class="btn link" (click)="removeSkill(i)">Remove</button>
+        </div>
+      }
+      <app-field-error [state]="f.skills()" />
+      <div class="bar">
+        <button type="button" class="btn outline" (click)="addSkill()" [disabled]="model().skills.length >= 6">+ Add skill</button>
+        <span class="count">{{ model().skills.length }} of 6 skills (minimum 2)</span>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" class="btn primary" [disabled]="!f().valid() || f().pending()">
+        @if (f().pending()) { Checking... } @else { Submit Onboarding → }
+      </button>
+    </div>
+  </form>
+</main>
