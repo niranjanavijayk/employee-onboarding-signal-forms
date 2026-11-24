@@ -124,4 +124,4 @@ src/app/
 
 ## Author
 
-**[Niranjana Vijay K]**
+**[niranjanavijayk]**
